@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>نموذج أولي – النظام المحاسبي والإداري</title>
+<style>
+:root{--bg:#f4f6fa;--card:#fff;--tx:#1b2430;--mut:#6b7686;--bd:#e2e7ef;--pri:#1f6feb;--ok:#1a9e5c;--bad:#d64545;--warn:#e29a00;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f141b;--card:#18202b;--tx:#e8edf4;--mut:#93a0b3;--bd:#263243;--pri:#4c8dff}}
+:root[data-theme="dark"]{--bg:#0f141b;--card:#18202b;--tx:#e8edf4;--mut:#93a0b3;--bd:#263243;--pri:#4c8dff}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:Tahoma,"Segoe UI",Arial,sans-serif;font-size:14px}
+header{background:var(--pri);color:#fff;padding:12px 16px;font-weight:700;font-size:16px}
+nav{display:flex;gap:6px;padding:10px;overflow-x:auto;background:var(--card);border-bottom:1px solid var(--bd)}
+nav button{border:0;background:transparent;color:var(--mut);padding:8px 14px;border-radius:8px;cursor:pointer;white-space:nowrap;font:inherit}
+nav button.on{background:var(--pri);color:#fff}
+main{padding:14px;max-width:1000px;margin:auto}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:12px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:12px;margin-bottom:12px}
+.kpi b{display:block;font-size:20px;margin-top:4px}.kpi span{color:var(--mut);font-size:12px}
+h3{margin:0 0 10px;font-size:15px}
+.tw{overflow-x:auto}table{width:100%;border-collapse:collapse}
+th,td{padding:8px;text-align:right;border-bottom:1px solid var(--bd);white-space:nowrap}th{color:var(--mut);font-weight:600;font-size:12px}
+input,select{background:var(--bg);color:var(--tx);border:1px solid var(--bd);border-radius:8px;padding:8px;font:inherit}
+.btn{background:var(--pri);color:#fff;border:0;border-radius:8px;padding:7px 12px;cursor:pointer;font:inherit}
+.btn.g{background:var(--ok)}.btn.r{background:var(--bad)}
+.tag{padding:2px 8px;border-radius:20px;font-size:12px;color:#fff}.ok{background:var(--ok)}.low{background:var(--warn)}.out{background:var(--bad)}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;align-items:center}
+.bar{height:8px;background:var(--bd);border-radius:6px;overflow:hidden;min-width:80px}.bar i{display:block;height:100%}
+.pos{color:var(--ok)}.neg{color:var(--bad)}
+.hide{display:none}
+svg text{font-family:Tahoma,Arial,sans-serif}
+</style>
+</head>
+<body>
+<header>📊 النظام المحاسبي والإداري المتكامل — نموذج تجريبي (بيانات وهمية)</header>
+<nav id="nav"></nav>
+<main>
+
+<section id="t-dash">
+<div class="grid" id="kpis"></div>
+<div class="card"><h3>المبيعات آخر 7 أيام (ج.م)</h3><svg id="chart" viewBox="0 0 600 180" width="100%"></svg></div>
+<div class="card"><h3>⚠️ تنبيهات المخزون</h3><div id="alerts"></div></div>
+</section>
+
+<section id="t-inv" class="hide">
+<div class="card">
+<div class="row"><input id="q" placeholder="🔍 بحث عن صنف أو باركود"><select id="mi"></select><input id="mq" type="number" value="10" style="width:80px">
+<button class="btn g" onclick="mv(1)">+ وارد</button><button class="btn" onclick="mv(-1)">− صادر</button><button class="btn r" onclick="mv(-2)">تالف</button></div>
+<div class="tw"><table><thead><tr><th>الباركود</th><th>الصنف</th><th>الوحدة</th><th>الكمية</th><th>حد الطلب</th><th>الحالة</th></tr></thead><tbody id="invb"></tbody></table></div>
+</div>
+</section>
+
+<section id="t-cus" class="hide">
+<div class="card"><h3>العملاء والمديونيات</h3>
+<div class="tw"><table><thead><tr><th>العميل</th><th>المندوب</th><th>الرصيد المدين</th><th>حد الكريدت</th><th>الاستخدام</th><th>الاستحقاق</th></tr></thead><tbody id="cusb"></tbody></table></div></div>
+</section>
+
+<section id="t-rep" class="hide">
+<div class="card">
+<div class="row"><b>المندوب:</b><select id="rs" onchange="drawRep()"></select><span id="rinfo" style="color:var(--mut)"></span></div>
+<svg id="map" viewBox="0 0 600 340" width="100%" style="background:var(--bg);border-radius:10px;border:1px solid var(--bd)"></svg>
+<div style="color:var(--mut);font-size:12px;margin-top:6px">* في النسخة النهائية تُستبدل هذه الخريطة بـ Google Maps التفاعلية مع GPS لحظي.</div>
+</div>
+<div class="card"><h3>زيارات اليوم</h3><div class="tw"><table><thead><tr><th>#</th><th>العميل</th><th>الحالة</th><th>التحصيل</th><th></th></tr></thead><tbody id="visb"></tbody></table></div></div>
+</section>
+
+<section id="t-cash" class="hide">
+<div class="grid" id="ck"></div>
+<div class="card"><div class="row"><select id="ct"><option value="1">مقبوضات</option><option value="-1">مدفوعات</option></select>
+<input id="cd" placeholder="البيان" style="flex:1;min-width:120px"><input id="ca" type="number" placeholder="المبلغ" style="width:110px"><button class="btn" onclick="addTx()">تسجيل</button></div>
+<div class="tw"><table><thead><tr><th>التاريخ</th><th>البيان</th><th>النوع</th><th>المبلغ</th></tr></thead><tbody id="txb"></tbody></table></div></div>
+<div class="card"><h3>الأرباح والخسائر (الشهر)</h3><div id="pl"></div></div>
+</section>
+</main>
+
+<script>
+const $=id=>document.getElementById(id),f=n=>Number(n).toLocaleString('en-US');
+const tabs=[["dash","لوحة التحكم"],["inv","المخازن"],["cus","العملاء"],["rep","المناديب والخريطة"],["cash","الخزينة"]];
+$("nav").innerHTML=tabs.map(([k,v],i)=>`<button data-k="${k}" class="${i?'':'on'}">${v}</button>`).join("");
+$("nav").onclick=e=>{const k=e.target.dataset.k;if(!k)return;
+ tabs.forEach(([x])=>$("t-"+x).classList.toggle("hide",x!=k));
+ [...$("nav").children].forEach(b=>b.classList.toggle("on",b.dataset.k==k));if(k=="rep")drawRep()};
+
+let items=[
+{b:"6221001",n:"أرز مصري 1 كجم",u:"كيس",q:240,m:100},
+{b:"6221002",n:"سكر 1 كجم",u:"كيس",q:35,m:80},
+{b:"6221003",n:"زيت عباد 800 مل",u:"زجاجة",q:0,m:50},
+{b:"6221004",n:"مكرونة 400 جم",u:"كيس",q:410,m:150},
+{b:"6221005",n:"شاي 100 جم",u:"علبة",q:60,m:60},
+{b:"6221006",n:"عدس 1 كجم",u:"كيس",q:150,m:70}];
+const reps=[
+{n:"أحمد سالم",c:"#1f6feb",pts:[[70,270],[150,200],[230,230],[310,140],[400,170],[500,70]]},
+{n:"محمود علي",c:"#1a9e5c",pts:[[60,60],[160,110],[240,60],[330,230],[430,260],[540,200]]}];
+const names=["بقالة النور","سوبر ماركت السلام","هايبر الأمل","مخبز الفجر","بقالة الحمد","ميني ماركت الريان","سوبر ماركت البركة","بقالة الإيمان","هايبر المدينة","بقالة التوحيد","سوبر ماركت الهدى","ماركت الخير"];
+const cus=names.map((n,i)=>{const lim=[20000,30000,50000,15000][i%4];const bal=Math.round(lim*[.2,.55,.95,.7,.4,1.1][i%6]);return{n,r:reps[i%2].n,bal,lim,due:`2026-11-${String(3+i*2).padStart(2,'0')}`}});
+let vis=[0,1].map(r=>reps[r].pts.map((p,i)=>({c:cus[r+i*2]?.n||cus[i].n,done:i<2,col:i<2?[1500,0][i]:0})));
+let tx=[["2026-10-28","تحصيل من بقالة النور",1,4500],["2026-10-28","شراء بضاعة - مورد الدلتا",-1,12000],["2026-10-27","تحصيل مندوب أحمد سالم",1,8200],["2026-10-27","إيجار مخزن",-1,3000]];
+let sales=[8200,11500,9800,14200,12100,16800,13400];
+
+function st(i){return i.q<=0?['out','نفد']:i.q<=i.m?['low','عند حد الطلب']:['ok','متوفر']}
+function renderInv(){const q=$("q").value.trim();
+ $("invb").innerHTML=items.filter(i=>!q||i.n.includes(q)||i.b.includes(q)).map(i=>{const[s,t]=st(i);return`<tr><td>${i.b}</td><td>${i.n}</td><td>${i.u}</td><td><b>${i.q}</b></td><td>${i.m}</td><td><span class="tag ${s}">${t}</span></td></tr>`}).join("");
+ $("mi").innerHTML=items.map((i,x)=>`<option value="${x}">${i.n}</option>`).join("");
+ const a=items.filter(i=>i.q<=i.m);
+ $("alerts").innerHTML=a.map(i=>{const[s,t]=st(i);return`<div class="row"><span class="tag ${s}">${t}</span> ${i.n} — المتاح ${i.q} (حد الطلب ${i.m})</div>`}).join("")||"لا توجد تنبيهات";
+ renderKpi()}
+function mv(d){const x=$("mi").value,n=+$("mq").value;if(!n)return;const it=items[x];
+ it.q=Math.max(0,it.q+(d==1?n:-n));renderInv()}
+$("q").oninput=()=>{const x=$("mi").value;renderInvKeep(x)};
+function renderInvKeep(x){renderInv();$("mi").value=x}
+
+function renderCus(){$("cusb").innerHTML=cus.map(c=>{const p=Math.round(c.bal/c.lim*100),col=p>100?'var(--bad)':p>80?'var(--warn)':'var(--ok)';
+ return`<tr><td>${c.n}</td><td>${c.r}</td><td>${f(c.bal)}</td><td>${f(c.lim)}</td><td><div class="bar"><i style="width:${Math.min(p,100)}%;background:${col}"></i></div><small>${p}%${p>100?' ⛔ تجاوز':''}</small></td><td>${c.due}</td></tr>`}).join("")}
+
+function drawRep(){const r=$("rs").value||0,R=reps[r];
+ let s='';for(let x=0;x<600;x+=50)s+=`<line x1="${x}" y1="0" x2="${x}" y2="340" stroke="var(--bd)"/>`;for(let y=0;y<340;y+=50)s+=`<line x1="0" y1="${y}" x2="600" y2="${y}" stroke="var(--bd)"/>`;
+ s+=`<polyline points="${R.pts.map(p=>p.join(',')).join(' ')}" fill="none" stroke="${R.c}" stroke-width="3" stroke-dasharray="8 5"/>`;
+ R.pts.forEach((p,i)=>{const v=vis[r][i];s+=`<circle cx="${p[0]}" cy="${p[1]}" r="13" fill="${v.done?'var(--ok)':R.c}"/><text x="${p[0]}" y="${p[1]+4}" text-anchor="middle" fill="#fff" font-size="12">${i+1}</text><text x="${p[0]}" y="${p[1]-18}" text-anchor="middle" fill="var(--tx)" font-size="11">${v.c}</text>`});
+ const cur=vis[r].filter(v=>v.done).length,cp=R.pts[Math.min(cur,R.pts.length-1)];
+ s+=`<text x="${cp[0]}" y="${cp[1]+34}" text-anchor="middle" font-size="18">📍</text>`;
+ $("map").innerHTML=s;
+ const tot=vis[r].reduce((a,v)=>a+v.col,0);
+ $("rinfo").textContent=`تمت ${cur} من ${vis[r].length} زيارات — التحصيل ${f(tot)} ج.م`;
+ $("visb").innerHTML=vis[r].map((v,i)=>`<tr><td>${i+1}</td><td>${v.c}</td><td>${v.done?'✅ تمت':'⏳ قادمة'}</td><td>${f(v.col)}</td><td>${v.done?'':`<button class="btn g" onclick="visit(${r},${i})">تسجيل زيارة + تحصيل</button>`}</td></tr>`).join("")}
+function visit(r,i){const a=prompt("مبلغ التحصيل (ج.م):","1000");if(a===null)return;
+ vis[r][i].done=true;vis[r][i].col=+a||0;tx.unshift(["2026-10-28","تحصيل مندوب "+reps[r].n+" - "+vis[r][i].c,1,+a||0]);
+ sales[6]+=+a||0;drawRep();renderCash();renderKpi();drawChart()}
+$("rs").innerHTML=reps.map((r,i)=>`<option value="${i}">${r.n}</option>`).join("");
+
+function bal(){return 85000+tx.reduce((a,t)=>a+t[2]*t[3],0)}
+function renderCash(){const i=tx.filter(t=>t[2]>0).reduce((a,t)=>a+t[3],0),o=tx.filter(t=>t[2]<0).reduce((a,t)=>a+t[3],0);
+ $("ck").innerHTML=`<div class="card kpi"><span>رصيد الخزينة</span><b>${f(bal())}</b></div><div class="card kpi"><span>إجمالي المقبوضات</span><b class="pos">${f(i)}</b></div><div class="card kpi"><span>إجمالي المدفوعات</span><b class="neg">${f(o)}</b></div>`;
+ $("txb").innerHTML=tx.map(t=>`<tr><td>${t[0]}</td><td>${t[1]}</td><td>${t[2]>0?'مقبوض':'مدفوع'}</td><td class="${t[2]>0?'pos':'neg'}">${t[2]>0?'+':'−'}${f(t[3])}</td></tr>`).join("");
+ const rev=214000,cogs=148000,exp=31000;
+ $("pl").innerHTML=`<div class="tw"><table><tr><td>الإيرادات</td><td class="pos">${f(rev)}</td></tr><tr><td>تكلفة البضاعة</td><td class="neg">${f(cogs)}</td></tr><tr><td>المصروفات</td><td class="neg">${f(exp)}</td></tr><tr><td><b>صافي الربح</b></td><td><b class="pos">${f(rev-cogs-exp)}</b></td></tr></table></div>`}
+function addTx(){const a=+$("ca").value;if(!a)return;tx.unshift(["2026-10-28",$("cd").value||"بدون بيان",+$("ct").value,a]);$("ca").value=$("cd").value="";renderCash();renderKpi()}
+
+function renderKpi(){const debt=cus.reduce((a,c)=>a+c.bal,0),low=items.filter(i=>i.q<=i.m).length;
+ $("kpis").innerHTML=[["مبيعات اليوم",f(sales[6])+" ج.م"],["رصيد الخزينة",f(bal())+" ج.م"],["مديونيات العملاء",f(debt)+" ج.م"],["أصناف تحتاج طلب",low],["مناديب نشطون","2"]].map(([a,b])=>`<div class="card kpi"><span>${a}</span><b>${b}</b></div>`).join("")}
+function drawChart(){const m=Math.max(...sales),d=["السبت","الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس","اليوم"];
+ $("chart").innerHTML=sales.map((v,i)=>{const h=v/m*130,x=560-i*80;return`<rect x="${x-25}" y="${150-h}" width="50" height="${h}" rx="5" fill="var(--pri)"/><text x="${x}" y="${142-h}" text-anchor="middle" font-size="11" fill="var(--tx)">${f(v)}</text><text x="${x}" y="170" text-anchor="middle" font-size="11" fill="var(--mut)">${d[i]}</text>`}).join("")}
+renderInv();renderCus();renderCash();drawChart();
+</script>
+</body>
+</html>
